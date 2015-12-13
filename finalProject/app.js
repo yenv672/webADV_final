@@ -63,7 +63,8 @@ io.on("connection",function(socket){
     });
 
     socket.on("connectFriend",function(data){
-        console.log("connectFriend "+data);
+        console.log("connectFriend from "+socket.id);
+        console.log(data);
         if(data==socket.id){//typing your own id is not allow
             socket.emit('matchOutcome',{
                 msg: "You cannot play with yourself",
@@ -133,7 +134,7 @@ io.on("connection",function(socket){
         var c_me = null;
         var c_friend = null;
 
-         console.log(clients);
+         // console.log(clients);
         // console.log("myID "+myID);
         // console.log("friendID "+friendID);
         
@@ -166,8 +167,8 @@ io.on("connection",function(socket){
         console.log("in player order");
 
         findMatch(socket.id, null,function(me,friend){
-        console.log("me "+me);
-        console.log("friend "+friend);
+        // console.log("me "+me);
+        // console.log("friend "+friend);
         var data = {
             me: me,
             friend: friend
@@ -178,14 +179,19 @@ io.on("connection",function(socket){
     });
 
     socket.on("setupPlayerInfo",function(data){
-        console.log("setupPlayerInfo "+data);
+        console.log("setupPlayerInfo from "+socket.id);
+        console.log(data);
         findMatch(socket.id,null,function(me,firend){
-            me = data;
+            me.boxes = data.boxes;
+            me.key = data.key;
+            me.Num = data.Num;
+            me.player = data.player;
         }); 
     });
 
     socket.on("uploadKey",function(data){
-        console.log("uploadKey "+data);
+        console.log("uploadKey from "+socket.id);
+        console.log(data);
         findMatch(socket.id,null,function(me,friend){
             me.key = data;
             if(me.key == 6){//your turn end end
@@ -202,20 +208,41 @@ io.on("connection",function(socket){
     });
 
     socket.on("uploadData",function(data){
-        console.log("uploadData "+data);
+        console.log("uploadData from "+socket.id);
+        // console.log(data);
         findMatch(socket.id,null,function(me,friend){
-            if(data.Num==0){//if was my turn update box to 
+            if(data.Num==1){//if was my turn update box to 
+                console.log("Passing boxes data");
                 friend.boxes = data.boxes;
+                console.log(friend.boxes);
             }
-            me = data;
+            me.boxes = data.boxes;
+            me.key = data.key;
+            me.Num = data.Num;
+            me.player = data.player;
             // socket.emit("downloadData",{
             //     me: me,
             //     friend: friend
-            // });
-            io.to(friend.id).emit("downloadData",{
+        //     // });
+        // console.log(me);
+        // console.log(clients);
+        // console.log(friend);
+        socket.emit("downloadData",{
+            friend :friend,
+            me: me
+        });
+        io.to(friend.id).emit("downloadData",{
                 friend: me,
                 me: friend
             });
+        });
+    });
+
+    socket.on("end",function(data){
+        console.log("end from "+socket.id);
+        console.log(data);
+        findMatch(socket.id,null,function(me,friend){
+            io.to(friend.id).emit("ended",data);
         });
     });
 

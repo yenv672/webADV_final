@@ -28,8 +28,8 @@ var boxes = {};
 var playerOrder = [];
 var startingBox = [1,5];
 var originalSpot = startingBox;
-// var player1 = new player("player1","red",originalSpot,0);
-// var player2 = new player("player2","blue",originalSpot,1);
+// var isMe_player = new player("isMe_player","red",originalSpot,0);
+// var isFriend_player = new player("isFriend_player","blue",originalSpot,1);
 var goal = [5,1];
 var isMe_player = null;
 var isFriend_player= null;
@@ -72,13 +72,22 @@ function game(socketL){
 		});
 		socket.on("yourFriendFinished",function(){
 			console.log("Your friend end");
-			socketUpdating();
-			
+			socketDownloading();
+			key_me = 1;
+			socketUpdate_key();
+			// Playing();
 		});
 		socket.on("IFinished",function(){
 			console.log("I am finished");
+			key_me = 1;
+			isMe_socket.key = key_me;
+			isMe_socket.Num = 1;
 			socketUpdating();
-			
+			socketDownloading();
+			// Playing();
+		});
+		socket.on("ended",function(data){
+
 		});
 	});
 };
@@ -92,37 +101,46 @@ function socketUpdate_key(){
 	socket.emit("uploadKey",isMe_socket.key);
 }
 
-function socketUpdating(){
-	isMe_socket.boxes = boxes;
-	isMe_socket.player = isMe_player;
-	isMe_socket.key = key_me;
-	socket.emit("uploadData",isMe_socket);
+function socketDownloading(){
 	socket.on("downloadData",function(data){
 		console.log("download ");
 		console.log(data);
 		isMe_socket = data.me;
 		isFriend_socket = data.friend;
+		key_me = isMe_socket.key;
+		key_friend = isFriend_socket.key;
+		isMe_player = isMe_socket.player;
+		isFriend_player = isFriend_socket.player;
+		boxes = isMe_socket.boxes;
+		console.log(boxes);
+		ManipulateBox(2);
+		ManipulateBox(3);
+		// boxes = isFriend_player.boxes;;
 	});
-	key_me = isMe_socket.key;
-	key_friend = isFriend_socket.key;
-	isMe_player = isMe_socket.player;
-	isFriend_player = isFriend_socket.player;
-	boxes = isMe_socket.boxes;
-	gameStage();
+
+}
+
+function socketUpdating(){
+	isMe_socket.boxes = boxes;
+	isMe_socket.player = isMe_player;
+	// isMe_socket.key = key_me;
+	socket.emit("uploadData",isMe_socket);
+	
 }
 
 function socketSetup(){
 	socket.emit("playerOrder");
 	socket.on("myInfo",function(data){
-		console.log("my info data: "+ data);
+		console.log("my info data: ");
+		console.log(data);
 		isMe_socket = data.me;
 		isFriend_socket = data.friend;
 		if(isMe_socket.Num==0){
-			isMe_player = new player("player1","red",originalSpot,0);
-			isFriend_player = new player("player2","blue",originalSpot,1);
+			isMe_player = new player("isMe_player","red",originalSpot,0);
+			isFriend_player = new player("isFriend_player","blue",originalSpot,1);
 		}else{
-			isFriend_player = new player("player1","red",originalSpot,0);
-			isMe_player = new player("player2","blue",originalSpot,1);
+			isFriend_player = new player("isMe_player","red",originalSpot,0);
+			isMe_player = new player("isFriend_player","blue",originalSpot,1);
 		}
 		isMe_socket.player = isMe_player;
 		socket.emit("setupPlayerInfo",isMe_socket);
@@ -152,15 +170,20 @@ function startGame(){
 function Playing(){
 	console.log("key "+key_me);
 	if(key_me==1){
+		$("#playground").show();
+		textShow("#PlayerInfo","Life: "+isMe_player.life, NextAni);
 			//if you are this turn player go to key 2 else go to key 7
 		if(isMe_socket.Num==0){
 			key_me=2;
+			textShow("#text","Your turn", "animated pulse");
 		}else{
 			key_me=7;
+			textShow("#text","Your friend's turn.", "animated pulse");
 		}
+		
 	}else if(key_me==2){
 			//first, player have to decide where to move
-		$("#putHere").show();
+		
 		textShow("#text","Click to move your character", "animated pulse");
 		showPosible(isMe_player.position);
 		key_me=3;
@@ -186,7 +209,7 @@ function Playing(){
 		textShow("#text",NextText, NextAni);
 	}else if(key_me==7){
 		//not your turn
-		$("#putHere").hide();
+		$("#playground").hide();
 		textShow("#text","Not your turn!", "animated pulse");
 	}
 
@@ -333,23 +356,27 @@ function checkSomeoneDieOrNot(player,destroySpot){
 
 function ending(){
 	
-	if(player1.life==0 || player2.life ==0 ||
-	 equal(player1.position,goal) ||  equal(player2.position,goal)){
+	if(isMe_player.life==0 || isFriend_player.life ==0 ||
+	 equal(isMe_player.position,goal) ||  equal(isFriend_player.position,goal)){
 		endingNow = true;
-		if(player1.life==0 ||  equal(player2.position,goal)){
-			endingMsg += "player2 win";
-			$("#ending").css("color",player2.Color);
+		if(isMe_player.life==0 ||  equal(isFriend_player.position,goal)){
+			endingMsg += "You Lose!";
+			$("#ending").css("color",isFriend_player.Color);
 		}else{
-			endingMsg += "player1 win";
-			$("#ending").css("color",player1.Color);
+			endingMsg += "You Win!";
+			$("#ending").css("color",isMe_player.Color);
 		}
 	}
 	if(endingNow){
 		//ending scene
+		socket.emit("end",{
+			endingMsg: endingMsg
+		});
 		$("#ending").show();
 		textShow("#ending",endingMsg, "animated bounceIn");
 	}
 	console.log("ending? "+endingMsg);
+
 };
 
 // function Restart(){
@@ -363,7 +390,7 @@ function ending(){
 
 function gameStage(){
 	console.log("gameStage "+key_me);
-	if(key_me<7){
+	if(key_me<8){
 		Playing();
 	}
 	if(key_me==10){
