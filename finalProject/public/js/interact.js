@@ -71,8 +71,14 @@ function game(socketL){
 			gameStage();
 		});
 		socket.on("yourFriendFinished",function(){
+			console.log("Your friend end");
 			socketUpdating();
-			gameStage();
+			
+		});
+		socket.on("IFinished",function(){
+			console.log("I am finished");
+			socketUpdating();
+			
 		});
 	});
 };
@@ -87,8 +93,13 @@ function socketUpdate_key(){
 }
 
 function socketUpdating(){
+	isMe_socket.boxes = boxes;
+	isMe_socket.player = isMe_player;
+	isMe_socket.key = key_me;
 	socket.emit("uploadData",isMe_socket);
 	socket.on("downloadData",function(data){
+		console.log("download ");
+		console.log(data);
 		isMe_socket = data.me;
 		isFriend_socket = data.friend;
 	});
@@ -97,6 +108,7 @@ function socketUpdating(){
 	isMe_player = isMe_socket.player;
 	isFriend_player = isFriend_socket.player;
 	boxes = isMe_socket.boxes;
+	gameStage();
 }
 
 function socketSetup(){
@@ -112,7 +124,7 @@ function socketSetup(){
 			isFriend_player = new player("player1","red",originalSpot,0);
 			isMe_player = new player("player2","blue",originalSpot,1);
 		}
-		isMe_socket.playerInfo = isMe_player;
+		isMe_socket.player = isMe_player;
 		socket.emit("setupPlayerInfo",isMe_socket);
 		startGame();
 	});
@@ -133,6 +145,7 @@ function startGame(){
 	placeBox(startingBox,"yellow",1);
 	placeBox(goal,"yellow",-1);
 	ManipulateBox(2);//update
+	playerPostionUpdate(-1,isMe_player);
 };
 
 
@@ -147,6 +160,7 @@ function Playing(){
 		}
 	}else if(key_me==2){
 			//first, player have to decide where to move
+		$("#putHere").show();
 		textShow("#text","Click to move your character", "animated pulse");
 		showPosible(isMe_player.position);
 		key_me=3;
@@ -172,6 +186,8 @@ function Playing(){
 		textShow("#text",NextText, NextAni);
 	}else if(key_me==7){
 		//not your turn
+		$("#putHere").hide();
+		textShow("#text","Not your turn!", "animated pulse");
 	}
 
 
@@ -289,13 +305,13 @@ function PlayerBoxMovement(which){
 				NextText = "Destroy!";
 				NextAni = "animated shake";
 				removeBox(clickPos);
-				checkSomeoneDieOrNot(notThisTurnPlayer,clickPos);
+				checkSomeoneDieOrNot(isFriend_player,clickPos);
 			}else{
 				//place your color
 				console.log("Create!");
 				NextText = "Create!";
 				NextAni = "animated fadeIn";
-				placeBox(clickPos,notThisTurnPlayer.Color,-1);
+				placeBox(clickPos,isFriend_player.Color,-1);
 				key_me=6;
 			}
 			ManipulateBox(3);
@@ -346,6 +362,7 @@ function ending(){
 //function(tool).....................................................function(tool)
 
 function gameStage(){
+	console.log("gameStage "+key_me);
 	if(key_me<7){
 		Playing();
 	}
@@ -402,7 +419,7 @@ function ManipulateBox(Mode){
 				case 3://change to current player's color and refresh
 					var nowBox = boxes[[i,j]];
 					if(nowBox!=boxes[goal] && nowBox!=boxes[startingBox]){
-						if(!nowBox.already || nowBox.Color !=notThisTurnPlayer.Color ){
+						if(!nowBox.already || nowBox.Color !=isFriend_player.Color ){
 							//filled the lava
 							nowBox.Color = isMe_player.Color;
 						}

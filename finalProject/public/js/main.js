@@ -55,6 +55,7 @@ app.main = (function() {
 			function(data){
 				match = data;
 				//append the choose
+				$('#msg').append("<h3>"+data+" want to play with you.</h3>");
 				$("#go").show();
 				$("#decline").show();
 				// $("#msg").empty();
@@ -84,7 +85,8 @@ app.main = (function() {
 	var startGame = function(){
 			socket.on("goToGame",function(){
 				console.log("goToGame");
-				window.location.replace("game.html");
+				$("#container").hide();
+				$("#game").show();
 				game(socket);
 			});
 		};
@@ -93,6 +95,7 @@ app.main = (function() {
 		console.log('Initializing app.');
 		$("#decline").hide();
 		$("#go").hide();
+		$("#game").hide();
 		socketSetup();
 		attachEvents();
 		showMatch();

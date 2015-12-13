@@ -2,7 +2,7 @@
 var express		= require('express'),
 	bodyParser	= require('body-parser');	// helper for parsing HTTP requests
 var app = express();						// our Express app
-var PORT = 4200;
+var PORT = 4000;
 
 // Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));// parse application/x-www-form-urlencoded
@@ -55,6 +55,7 @@ io.on("connection",function(socket){
             id:socket.id,
             ready:false,
             boxes:{},
+            key: 1,
             Num:-1,
             player: null
         });
@@ -110,6 +111,16 @@ io.on("connection",function(socket){
                         friend.key = 1;
                         me.boxes = {};
                         friend.boxes = {};
+
+                        coinR = Math.random() * 10;
+                        if(coinR>=5){
+                            me.Num = 0;
+                            friend.Num = 1;
+                        }else{
+                            me.Num = 1;
+                            friend.Num = 0;
+                        }
+
                         io.to(data).emit("goToGame");
                         socket.emit("goToGame");
                     });
@@ -122,19 +133,19 @@ io.on("connection",function(socket){
         var c_me = null;
         var c_friend = null;
 
-        console.log(clients);
-        console.log("myID "+myID);
-        console.log("friendID "+friendID);
+         console.log(clients);
+        // console.log("myID "+myID);
+        // console.log("friendID "+friendID);
         
         for(var i=0,len = clients.length;i<len;i++){
                 var c = clients[i];
                 if(c.id == myID){
                     c_me = c;
-                    console.log("find myself "+ c_me.id);
+                    // console.log("find myself "+ c_me.id);
                 }
                 if(c.id == friendID){
                     c_friend = c;
-                    console.log("find friend "+ c_friend.id);
+                    // console.log("find friend "+ c_friend.id);
                 }
             }
 
@@ -142,39 +153,27 @@ io.on("connection",function(socket){
             for(var i=0,len = clients.length;i<len;i++){
                 var c = clients[i];
                 if(c.id == c_me.match){
-                   c_friend = c;
-                    console.log("find friend "+ c_friend.id);
+                    c_friend = c;
+                    // console.log("find friend "+ c_friend.id);
                 }
             }
         }
-        
         callback(c_me,c_friend);
-    }
+    };
 
     socket.on("playerOrder",function(){
 
         console.log("in player order");
 
         findMatch(socket.id, null,function(me,friend){
-            console.log("me "+me);
-            console.log("friend "+friend);
-            coinR = Math.random() * 10;
-            if(coinR>=5){
-                me.Num = 0;
-                friend.Num = 1;
-            }else{
-                me.Num = 1;
-                friend.Num = 0;
-            }
-
-            var data = {
-                me: me,
-                friend: friend
-            };
-
-            console.log("send back data:"+data);
-
-            socket.emit("myInfo",data);
+        console.log("me "+me);
+        console.log("friend "+friend);
+        var data = {
+            me: me,
+            friend: friend
+        };
+        socket.emit("myInfo",data);
+        
         });
     });
 
@@ -188,8 +187,8 @@ io.on("connection",function(socket){
     socket.on("uploadKey",function(data){
         console.log("uploadKey "+data);
         findMatch(socket.id,null,function(me,friend){
-            me.key = key;
-            if(key == 6){//your turn end end
+            me.key = data;
+            if(me.key == 6){//your turn end end
                 //update the key
                 friend.key = 1;
                 me.key = 1;
@@ -197,6 +196,7 @@ io.on("connection",function(socket){
                 friend.Num = 0;
                 //trigger your firend's turn
                 io.to(friend.id).emit("yourFriendFinished");
+                socket.emit("IFinished");
             }
         });  
     });
@@ -204,13 +204,17 @@ io.on("connection",function(socket){
     socket.on("uploadData",function(data){
         console.log("uploadData "+data);
         findMatch(socket.id,null,function(me,friend){
-            if(data.me.Num==0){//if was my turn update box to 
+            if(data.Num==0){//if was my turn update box to 
                 friend.boxes = data.boxes;
             }
             me = data;
-            socket.emit("downloadData",{
-                me: me,
-                friend: friend
+            // socket.emit("downloadData",{
+            //     me: me,
+            //     friend: friend
+            // });
+            io.to(friend.id).emit("downloadData",{
+                friend: me,
+                me: friend
             });
         });
     });
