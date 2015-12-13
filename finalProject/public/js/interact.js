@@ -38,7 +38,7 @@ var nowPosibleMove = {};
 var NextText = null;
 var NextAni = null;
 var endingMsg = "";
-
+var endingMsgToFriend = "";
 
 ////////socket.io
 var socket;
@@ -75,7 +75,7 @@ function game(socketL){
 			socketDownloading();
 			key_me = 1;
 			socketUpdate_key();
-			// Playing();
+			gameStage();
 		});
 		socket.on("IFinished",function(){
 			console.log("I am finished");
@@ -87,7 +87,9 @@ function game(socketL){
 			// Playing();
 		});
 		socket.on("ended",function(data){
-
+			endingMsg = data.endingMsg;
+			$("#ending").show();
+			textShow("#ending",endingMsg, "animated bounceIn");
 		});
 	});
 };
@@ -170,7 +172,7 @@ function startGame(){
 function Playing(){
 	console.log("key "+key_me);
 	if(key_me==1){
-		$("#playground").show();
+		// $("#playground").show();
 		textShow("#PlayerInfo","Life: "+isMe_player.life, NextAni);
 			//if you are this turn player go to key 2 else go to key 7
 		if(isMe_socket.Num==0){
@@ -209,7 +211,7 @@ function Playing(){
 		textShow("#text",NextText, NextAni);
 	}else if(key_me==7){
 		//not your turn
-		$("#playground").hide();
+		// $("#playground").hide();a
 		textShow("#text","Not your turn!", "animated pulse");
 	}
 
@@ -288,6 +290,7 @@ function checkMove(which){
 				key_me=4;
 				if(equal(isMe_player.position,goal)){
 					endingMsg = "You get to the goal!\n";
+					endingMsgToFriend = "Your friend got to the goal!\n";
 					key_me = 10;
 				}
 			}else{
@@ -297,6 +300,7 @@ function checkMove(which){
 				NextAni = "animated shake";
 				if(isMe_player.life==0){
 					endingMsg = "You lose all your life!\n";
+					endingMsgToFriend = "Your friend lose all their life!\n";
 					key_me = 10;
 				}else{
 					key_me = 4;
@@ -347,7 +351,8 @@ function checkSomeoneDieOrNot(player,destroySpot){
 		//console.log(player.position +" "+destroySpot);
 		if(equal(player.position,destroySpot)){
 			player.life = 0;//playerDead
-			endingMsg = "You destroy enemies' place!\n"
+			endingMsg = "You destroy enemies' place!\n";
+			endingMsgToFriend = "Your place was destroyed!\n";
 			key_me = 10;
 		}else{
 			key_me=6;
@@ -361,16 +366,18 @@ function ending(){
 		endingNow = true;
 		if(isMe_player.life==0 ||  equal(isFriend_player.position,goal)){
 			endingMsg += "You Lose!";
+			endingMsgToFriend += "You Win!";
 			$("#ending").css("color",isFriend_player.Color);
 		}else{
 			endingMsg += "You Win!";
+			endingMsgToFriend += "You Lose!";
 			$("#ending").css("color",isMe_player.Color);
 		}
 	}
 	if(endingNow){
 		//ending scene
 		socket.emit("end",{
-			endingMsg: endingMsg
+			endingMsg: endingMsgToFriend
 		});
 		$("#ending").show();
 		textShow("#ending",endingMsg, "animated bounceIn");

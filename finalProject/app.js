@@ -44,21 +44,36 @@ io.on("connection",function(socket){
     //1 - a string that identifies the messafe
     //2 - message(data)
     //socket refer to ONE user
-    socket.emit('welcome','welcome! your ID is <br>'+socket.id);
+    socket.emit('welcome','Welcome! Please enter your name!');
     
     // //io.sockets refer to ALL
     // io.sockets.emit("hey-everyone","hey~ welcome "+socket.id);
 
     //Listeners
     socket.on("saveClient",function(data){//save the client
-        clients.push({
-            id:socket.id,
-            ready:false,
-            boxes:{},
-            key: 1,
-            Num:-1,
-            player: null
-        });
+        console.log("saveClient from "+socket.id);
+        var alreadyHave = false;
+        for(var i =0;i<clients.length;i++){
+            var c = clients[i];
+            if(c.name==data){
+                alreadyHave = true;
+            }
+        }
+        if(!alreadyHave){
+                clients.push({
+                id:socket.id,
+                name: data,
+                ready:false,
+                boxes:{},
+                key: 1,
+                Num:-1,
+                player: null
+            });
+            socket.emit("goodName");
+        }else{
+            socket.emit("badName");
+        }
+        
         // console.log("clients "+clients[clients.length-1]);
     });
 
@@ -212,9 +227,9 @@ io.on("connection",function(socket){
         // console.log(data);
         findMatch(socket.id,null,function(me,friend){
             if(data.Num==1){//if was my turn update box to 
-                console.log("Passing boxes data");
+                // console.log("Passing boxes data");
                 friend.boxes = data.boxes;
-                console.log(friend.boxes);
+                // console.log(friend.boxes);
             }
             me.boxes = data.boxes;
             me.key = data.key;

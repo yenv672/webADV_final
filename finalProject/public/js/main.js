@@ -12,19 +12,32 @@ app.main = (function() {
 
 	var socketSetup = function(){
 		socket = io.connect();
-		socket.emit("saveClient",null);
+		// socket.emit("saveClient",null);
 		socket.on('welcome',function(data){
 			console.log(data);
 			$('#yourID').append('<h3>'+data+'</h3>');
+		});
+		socket.on("badName",function(){
+			$("#msg").empty();
+			$('#msg').append("<h3>Someone already named this name.</h3>");
+		});
+		socket.on("goodName",function(){
+			$("#enterPlace").show();
+			$("#msg").empty();
+			$('#msg').append("<h3>Nice name!</br>Now you can invite your friend or give your friend your name to invite you!</h3>");
+		});
+		$("#NameButton").click(function(){
+			var myName = $("#myName").val();
+			socket.emit("saveClient",myName);
 		});
 	};
 
 	var attachEvents = function(){
 		//searching the friend
 		$("#button").click(function(e){
-			match = $("#FriendID").val();
-			console.log("search "+match);
-			socket.emit("connectFriend",match);
+			var friendName = $("#FriendID").val();
+			console.log("search "+friendName);
+			socket.emit("connectFriend",friendName);
 		});
 	};
 
@@ -93,6 +106,7 @@ app.main = (function() {
 		
 	var init = function(){
 		console.log('Initializing app.');
+		$("#enterPlace").hide();
 		$("#decline").hide();
 		$("#go").hide();
 		$("#game").hide();
