@@ -52,6 +52,7 @@ var isFriend_socket;
 //style relate.........................................................style relate
 
 var unit = 15;//px
+var boxWidth = unit *5;
 var startTop = 8*unit;
 var startLeft = 24*unit;
 var playerT = startTop;
@@ -76,6 +77,7 @@ function game(socketL){
 			key_me = 1;
 			socketUpdate_key();
 			gameStage();
+			textShow("#text","Your friend finished!", "animated pulse");
 		});
 		socket.on("IFinished",function(){
 			console.log("I am finished");
@@ -138,9 +140,11 @@ function socketSetup(){
 		isMe_socket = data.me;
 		isFriend_socket = data.friend;
 		if(isMe_socket.Num==0){
+			$('body').css("background-color","red");
 			isMe_player = new player("isMe_player","red",originalSpot,0);
 			isFriend_player = new player("isFriend_player","blue",originalSpot,1);
 		}else{
+			$('body').css("background-color","blue");
 			isFriend_player = new player("isMe_player","red",originalSpot,0);
 			isMe_player = new player("isFriend_player","blue",originalSpot,1);
 		}

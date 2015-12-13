@@ -21,10 +21,11 @@ app.main = (function() {
 			$("#msg").empty();
 			$('#msg').append("<h3>Someone already named this name.</h3>");
 		});
-		socket.on("goodName",function(){
+		socket.on("goodName",function(data){
+			$("#yourName").hide();
 			$("#enterPlace").show();
-			$("#msg").empty();
-			$('#msg').append("<h3>Nice name!</br>Now you can invite your friend or give your friend your name to invite you!</h3>");
+			$("#yourID").empty();
+			$('#yourID').append("<h3>Hi "+data+"! Nice name!</br>Now you can invite your friend or give your friend your name to invite you!</h3>");
 		});
 		$("#NameButton").click(function(){
 			var myName = $("#myName").val();
@@ -49,8 +50,10 @@ app.main = (function() {
 				$("#msg").empty();
 				$('#msg').append("<h3>"+data.msg+"</h3>");
 				if(data.outcome){
+					match = data.matchID;
 					$("#go").show();
 				}else{
+					$("#FriendID").val("");
 					match = null;
 				}
 				
@@ -66,9 +69,9 @@ app.main = (function() {
 		//to friend
 		socket.on('someOneMatch',
 			function(data){
-				match = data;
+				match = data.matchID;
 				//append the choose
-				$('#msg').append("<h3>"+data+" want to play with you.</h3>");
+				$('#msg').append("<h3>"+data.matchName+" want to play with you.</h3>");
 				$("#go").show();
 				$("#decline").show();
 				// $("#msg").empty();
@@ -80,7 +83,7 @@ app.main = (function() {
 		$("#go").click(function(e){
 			console.log("ready");
 			socket.emit("ready",match);
-			$('#msg').append('waiting for friend to ready');
+			$('#msg').append('Waiting for friend to ready');
 			$("#decline").hide();
 			$("#go").hide();
 		});

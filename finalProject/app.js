@@ -69,7 +69,7 @@ io.on("connection",function(socket){
                 Num:-1,
                 player: null
             });
-            socket.emit("goodName");
+            socket.emit("goodName",data);
         }else{
             socket.emit("badName");
         }
@@ -80,32 +80,66 @@ io.on("connection",function(socket){
     socket.on("connectFriend",function(data){
         console.log("connectFriend from "+socket.id);
         console.log(data);
-        if(data==socket.id){//typing your own id is not allow
-            socket.emit('matchOutcome',{
-                msg: "You cannot play with yourself",
-                outcome: false
-            });
-        }else{
-            var msg = "Not found!";
-            var found = false;
+
+        var msg = "Not found!";
+        var found = false;
+        var friendID = null;
+        var myName = null;
             for( var i=0, len=clients.length; i<len; ++i ){
                 var c = clients[i];
-                if(c.id == data){
-                    msg = "Found!";
-                    found = true;//if found friend
-                    break;
+                if(c.id==socket.id){
+                    myName = c.name;
+                }
+                if(c.name == data){
+                    if(c.id == socket.id){//if yourself
+                        msg = "You cannot play with yourself";
+                    }else{
+                        msg = "Found!";
+                        found = true;//if found friend
+                        friendID = c.id;
+                    }
                 }
             }
 
             if(found){//send msg to friend
-                io.to(data).emit('someOneMatch',socket.id);
+                io.to(friendID).emit('someOneMatch',{
+                    matchID:socket.id,
+                    matchName: myName
+                });
             }
             //send the outcome to myself
             socket.emit('matchOutcome',{
                 msg: msg,
-                outcome: found
+                outcome: found,
+                matchID:friendID
             });
-        }
+
+        // if(data==socket.id){//typing your own id is not allow
+        //     socket.emit('matchOutcome',{
+        //         msg: "You cannot play with yourself",
+        //         outcome: false
+        //     });
+        // }else{
+        //     var msg = "Not found!";
+        //     var found = false;
+        //     for( var i=0, len=clients.length; i<len; ++i ){
+        //         var c = clients[i];
+        //         if(c.id == data){
+        //             msg = "Found!";
+        //             found = true;//if found friend
+        //             break;
+        //         }
+        //     }
+
+        //     if(found){//send msg to friend
+        //         io.to(data).emit('someOneMatch',socket.id);
+        //     }
+        //     //send the outcome to myself
+        //     socket.emit('matchOutcome',{
+        //         msg: msg,
+        //         outcome: found
+        //     });
+        // }
     });
 
     socket.on("ready",function(data){
