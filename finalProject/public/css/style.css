@@ -1,7 +1,53 @@
 /* your style begins here */
 body{
-	background-color: white;
+	/*background-color: white;*/
 	font-family: 'Raleway';
+	background: linear-gradient(120deg, #ff0000, #0000ff);
+	/*background-size: 400% 400%;*/
+	background-size:cover;
+	-webkit-animation: gradient 30s ease infinite;
+	-moz-animation: gradient 30s ease infinite;
+	-o-animation: gradient 30s ease infinite;
+	animation: gradient 30s ease infinite;
+
+}
+
+@-webkit-keyframes gradient {
+    0%{background-position:20% 0%}
+    50%{background-position:81% 100%}
+    100%{background-position:20% 0%}
+}
+@-moz-keyframes gradient {
+    0%{background-position:20% 0%}
+    50%{background-position:81% 100%}
+    100%{background-position:20% 0%}
+}
+@-o-keyframes gradient {
+    0%{background-position:20% 0%}
+    50%{background-position:81% 100%}
+    100%{background-position:20% 0%}
+}
+@keyframes gradient { 
+    0%{background-position:20% 0%}
+    50%{background-position:81% 100%}
+    100%{background-position:20% 0%}
+}
+
+
+.btn {
+  -webkit-border-radius: 28;
+  -moz-border-radius: 28;
+  border-radius: 28px;
+  color: #8a8a8a;
+  font-size: 20px;
+  background: #ffffff;
+  padding: 5px 10px 5px 10px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #e8e8e8;
+  text-decoration: none;
 }
 
 #container{
@@ -9,15 +55,18 @@ body{
 	left: 50%;
 	top:50%;
 	width: 700px;
-	height: 200px;
-	margin-top: -100px;
+	height: 300px;
+	margin-top: -150px;
 	margin-left: -350px;
 	text-align: center;
+	color: white;
 }
 
 
 .box{
 	position: absolute;
+	top:50%;
+	left: 50%;
 	width: 75px;
 	height: 75px;
 	-webkit-border-radius: 5px;
@@ -34,6 +83,20 @@ body{
     animation-duration: 1s;
     -webkit-animation-iteration-count: 10;
      animation-iteration-count: 10;
+}
+
+
+
+#title{
+	font-size: 150px;
+	font-style: bold;
+	font-family: 'Luckiest Guy', cursive;
+	-webkit-animation-name: tada;
+  	animation-name: tada;
+  	-webkit-animation-duration: 1s;
+  	animation-duration: 1s;
+    -webkit-animation-iteration-count: 1;
+     animation-iteration-count: 1;
 }
 
 .showPos{
@@ -67,11 +130,15 @@ body{
 }
 
 #text{
-	padding-top: 5%;
+	/*padding-top: 5%;*/
+	top:50%;
+	left: 50%;
+	margin-top:-262.5px;
+	margin-left:-262.5px; 
 	font-size: 25px;
-	padding-left: 15%;
+	/*padding-left: 15%;*/
 	color: white;
-	position: relative;
+	position: absolute;
 	z-index: 3;
 }
 /*
@@ -82,7 +149,10 @@ body{
 
 #PlayerInfo{
 	position: absolute;
-	right: 30%;
+	top:50%;
+	left: 50%;
+	margin-top:-262.5px;
+	margin-left:262.5px; 
 	font-size: 25px;
 
 	color: white;
@@ -96,6 +166,6 @@ body{
 	border-radius: 5px;
 	width: 25px;
 	height: 25px;
-	top: -25px;
-	left: -25px;
+	top: 50%;
+	left: 50%;
 }

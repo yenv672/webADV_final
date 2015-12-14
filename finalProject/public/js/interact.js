@@ -53,8 +53,8 @@ var isFriend_socket;
 
 var unit = 15;//px
 var boxWidth = unit *5;
-var startTop = 8*unit;
-var startLeft = 24*unit;
+var startTop = -unit*2 - boxWidth*2.5;
+var startLeft = startTop;
 var playerT = startTop;
 var playerL = startLeft;
 
@@ -428,8 +428,8 @@ function playerPostionUpdate(newPos,player){
 		player.position = newPos;
 		//console.log("new box: "+boxes[player.position].player[player.Num]);
 	}
-	$("#token").css("top",(player.position[0]-1)*6*unit+playerT);
-	$("#token").css("left",(player.position[1]-1)*6*unit+playerL);
+	$("#token").css("margin-top",(player.position[0]-1)*6*unit+playerT);
+	$("#token").css("margin-left",(player.position[1]-1)*6*unit+playerL);
 	addAnimation("#token","animated zoomIn");
 }
 
@@ -444,8 +444,8 @@ function ManipulateBox(Mode){
 					var appendContent='<div id="'+newBoxId+'" class="box"></div>';
 					$("#putHere").append(appendContent);
 					$("#"+newBoxId).css("background-color",newBox.Color);
-					$("#"+newBoxId).css("top",startTop+(i-1)*unit*5+"px");
-					$("#"+newBoxId).css("left",startLeft+(j-1)*unit*5+"px");
+					$("#"+newBoxId).css("margin-top",startTop+(i-1)*unit*5+"px");
+					$("#"+newBoxId).css("margin-left",startLeft+(j-1)*unit*5+"px");
 					addAnimation("#"+newBoxId,"animated zoomIn");
 					startLeft += unit;
 				break;

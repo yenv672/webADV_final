@@ -13,25 +13,28 @@
 </head>
 <body>
 	<link href='https://fonts.googleapis.com/css?family=Raleway:400,600' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Luckiest+Guy' rel='stylesheet' type='text/css'>
 	<script type="text/javascript" src="js/jquery-min.js"></script>
 	<script type="text/javascript" src="js/interact.js"></script>
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<div id="container" >
+		<div id="title"> LAVA!!! </div>
 		<div id="yourID"></div>
 		<div id="yourName">
 			Your nickName: <input type="text" id="myName">
-			<input type="button" id="NameButton" value="submit!">
+			<input type="button" class="btn" id="NameButton" value="submit!">
 		</div>
 		<div id="enterPlace">
-			Try to link to your friend?
-			<input type="text" id="FriendID" value="Friend's Nickname">
-			<input type="button" id="button" value="LINK!">
+			Try to link to your friend?<br>
+			Your friend's nickName:
+			<input type="text" id="FriendID" >
+			<input type="button" class="btn" id="button" value="LINK!">
 		</div>
 		<div id="msg">
 		</div>
-		<input type="button" id="go" value="start!">
-		<input type="button" id="decline" value="No!">
+		<input type="button" class="btn" id="go" value="start!">
+		<input type="button" class="btn" id="decline" value="No!">
 	</div>
 	<div id="game">
 		<div id="text">
