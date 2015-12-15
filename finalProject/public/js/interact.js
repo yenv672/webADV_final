@@ -140,11 +140,11 @@ function socketSetup(){
 		isMe_socket = data.me;
 		isFriend_socket = data.friend;
 		if(isMe_socket.Num==0){
-			$('body').css("background-color","red");
+			$('body').css("background","red");
 			isMe_player = new player("isMe_player","red",originalSpot,0);
 			isFriend_player = new player("isFriend_player","blue",originalSpot,1);
 		}else{
-			$('body').css("background-color","blue");
+			$('body').css("background","blue");
 			isFriend_player = new player("isMe_player","red",originalSpot,0);
 			isMe_player = new player("isFriend_player","blue",originalSpot,1);
 		}

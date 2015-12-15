@@ -84,6 +84,7 @@ app.main = (function() {
 			console.log("ready");
 			socket.emit("ready",match);
 			$('#msg').append('Waiting for friend to ready');
+			$("#enterPlace").hide();
 			$("#decline").hide();
 			$("#go").hide();
 		});
