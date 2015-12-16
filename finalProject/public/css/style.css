@@ -125,16 +125,22 @@ body{
 
 #ending{
 	position: absolute;
-	margin-top: -100px;
-	padding-top: 100px;
-	padding-left: 5%;
-	width: 95%;
-	height: 700px;
+	margin-top: -300px;
+	margin-left: -450px;
+	padding:50px;
+/*	padding-left: 5%;
+*/	top:50%;
+	left: 50%;
+	width: 800px;
+	height: 500px;
 	z-index: 4;
 	background-color: white;
 	color: white;
-	font-size: 72px;
-	font-family: 'Raleway', sans-serif;
+	font-size: 100px;
+	font-family: 'Luckiest Guy', cursive;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 #text{

@@ -89,6 +89,7 @@ function game(socketL){
 			// Playing();
 		});
 		socket.on("ended",function(data){
+			$("#ending").css("color",isMe_player.Color);
 			endingMsg = data.endingMsg;
 			$("#ending").show();
 			textShow("#ending",endingMsg, "animated bounceIn");
