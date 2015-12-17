@@ -299,13 +299,15 @@ io.on("connection",function(socket){
         io.to(data).emit("rejected");
     });
 
-    socket.on("disconnection",function(data){
+    socket.on("disconnect",function(data){
         console.log(data);
         //delete the user
         for( var i=0, len=clients.length; i<len; ++i ){
                 var c = clients[i];
+
                 if(c.id == socket.id){
                     clients.splice(i,1);
+                    console.log(clients);
                     break;
                 }
             }
